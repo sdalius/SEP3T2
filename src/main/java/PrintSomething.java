@@ -1,8 +1,8 @@
-import SocketServer.ConnectedClient;
+import SocketServer.StartServer;
 
 public class PrintSomething {
     public static void main(String[] args) {
-        ConnectedClient client = new ConnectedClient();
+        StartServer client = new StartServer();
         client.start(5000);
     }
 }

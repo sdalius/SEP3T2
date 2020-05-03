@@ -1,11 +1,8 @@
 package SocketServer;
 
 import ObjectsFromAPI.Song;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
@@ -13,11 +10,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.*;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConnectedClient {
+public class StartServer {
     private ServerSocket serverSocket;
     private SocketAddress socketAddress;
     private Socket clientSocket;
@@ -25,14 +21,17 @@ public class ConnectedClient {
     private BufferedReader in;
 
     public void start(int port) {
-        GetSongListFromAPI();
+        //GetSongListFromAPI();
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("Server started");
-            clientSocket = serverSocket.accept();
-            System.out.println("SOmeone connected?");
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            while(true)
+            {
+                clientSocket = serverSocket.accept();
+                System.out.println("Connected!");
+                Thread th = new Thread(new Connected(clientSocket));
+                th.start();
+            }
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -78,12 +77,12 @@ public class ConnectedClient {
             JSONArray jsonArray = new JSONArray(jsonString);
 
             for (int i=0; i<jsonArray.length(); i++) {
-                JSONObject jsonDrink = jsonArray.getJSONObject(i);
-                int songID = jsonDrink.getInt("songID");
-                int voteamount = jsonDrink.getInt("voteAmount");
-                int categoryID = jsonDrink.getInt("categoryID");
-                String title = jsonDrink.getString("title");
-                String artist = jsonDrink.getString("artist");
+                JSONObject jsonSong = jsonArray.getJSONObject(i);
+                int songID = jsonSong.getInt("songID");
+                int voteamount = jsonSong.getInt("voteAmount");
+                int categoryID = jsonSong.getInt("categoryID");
+                String title = jsonSong.getString("title");
+                String artist = jsonSong.getString("artist");
                 Song song = new Song();
                 song.setSongID(songID);
                 song.setVoteAmount(voteamount);
